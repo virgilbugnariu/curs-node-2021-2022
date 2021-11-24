@@ -14,7 +14,8 @@ const queryType = new GraphQLObjectType({
   fields: {
     users: {
       type: new GraphQLList(userType),
-      resolve: async () => {
+      resolve: async (_, args, context) => {
+        console.log('context', context)
         return await db.User.findAll();
       }
     },
