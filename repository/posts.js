@@ -1,35 +1,24 @@
 const db = require('../models');
 
-module.exports.getAllPosts = async (req, res) => {
+module.exports.getAllPosts = async () => {
   try {
     const allPosts = await db.Post.findAll();
-    res.send(allPosts);
+    return allPosts;
   } catch (error) {
     console.error('Something went wrong');
-    res.send({
-      error: "Something went wrong",
-    });
+    return null;
   }
 }
 
-module.exports.getPostById = async (req, res) => {
-  const postId = parseInt(req.params.id);
+module.exports.getPostById = async (id) => {
+  const postId = parseInt(id);
   
   try {
     const post = await db.Post.findByPk(postId);
-    const author = await post.getUser();
-
-    const response = {
-      ...post.dataValues,
-      author
-    };
-
-    res.send(response);
+    return post;
   } catch (error) {
     console.error('Something went wrong');
-    res.send({
-      error: "Something went wrong",
-    });
+    return null;
   }
 }
 
