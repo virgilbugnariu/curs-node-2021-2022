@@ -18,6 +18,14 @@ module.exports = {
       })
     }
     await queryInterface.bulkInsert('Posts', posts , {});
+
+    await queryInterface.bulkInsert('Posts', [{
+      userId: 1,
+      title: 'Post de Test',
+      body: 'alt test',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }], {});
   },
 
   down: async (queryInterface, Sequelize) => {
