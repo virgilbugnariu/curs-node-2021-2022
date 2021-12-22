@@ -5,27 +5,23 @@ const {
   GraphQLList,
 } = require('graphql');
 
-
 module.exports = new GraphQLObjectType({
-  name: 'Post',
+  name: 'Comment',
   fields: () => { 
+    const postType = require('./postType');
     const userType = require('./userType');
-    const commentType = require('./commentType');
 
-    return ({
+    return {
       id: {
         type: GraphQLID,
-      },
-      title: {
-        type: GraphQLString,
       },
       body: {
         type: GraphQLString,
       },
-      comments: {
-        type: new GraphQLList(commentType),
+      post: {
+        type: postType,
         resolve: async (source) => {
-          return await source.getComments();
+          return await source.getPost();
         }
       },
       author: {
@@ -34,5 +30,6 @@ module.exports = new GraphQLObjectType({
           return await source.getUser();
         }
       }
-    })}
+    }
+  }
 });

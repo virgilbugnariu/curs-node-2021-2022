@@ -85,10 +85,6 @@ module.exports.addTagToPost = async (req, res) => {
       error: "Something went wrong",
     });
   }
-
-
-
-
 }
 
 module.exports.updatePost = (req, res) => {
@@ -98,4 +94,19 @@ module.exports.updatePost = (req, res) => {
 
 module.exports.deletePost = (req, res) => {
   
+}
+
+module.exports.createComment = async (postId, userId, body) => {
+  try {
+    const comment = await db.Comment.create({
+      userId, 
+      postId, 
+      body
+    });
+    return comment;
+  } catch (error) {
+    console.log('error', error)
+    console.error('Something went wrong');
+    return null;
+  }
 }

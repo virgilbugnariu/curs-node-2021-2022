@@ -1,15 +1,21 @@
 const { 
   GraphQLObjectType, GraphQLString, GraphQLNonNull
 } = require('graphql');
+
 const loginHandler = require('../repository/login');
+
 const createUserInputType = require('./inputTypes/createUserInputType');
 const loginInputType = require('./inputTypes/loginInputType');
 const updateUserInputType = require('./inputTypes/updateUserInputType');
+const createCommentInputType = require('./inputTypes/createCommentInputType');
 
 const loginResultType = require('./types/loginResultType');
 const userType = require('./types/userType');
-const db = require('../models');
+const commentType = require('./types/commentType');
+
 const { createUser, updateUser } = require('../repository/users');
+const { createComment } = require('../repository/posts');
+const pubsub = require('../pubsub');
 
 const mutationType = new GraphQLObjectType({
   name: 'Mutation',
@@ -51,6 +57,30 @@ const mutationType = new GraphQLObjectType({
       },
       resolve: async (source, args, context) => {
         return updateUser(args.updateUserInput, context);
+      }
+    },
+    createComment: {
+      type: commentType,
+      args: {
+        createCommentInput: {
+          type: createCommentInputType,
+        }
+      },
+      resolve: async (source, args, context) => {
+        const userId = context.user.id;
+
+        const comment = await createComment(
+          args.createCommentInput.postId, 
+          userId,
+          args.createCommentInput.body,
+        );
+
+        pubsub.publish('comments', {
+          postComments: {
+            comment: comment.toJSON(),
+          }
+        });
+        return comment;
       }
     }
   },

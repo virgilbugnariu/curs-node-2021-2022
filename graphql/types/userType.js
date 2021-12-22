@@ -6,7 +6,7 @@ const {
 
 const userType = new GraphQLObjectType({
   name: 'User',
-  fields: {
+  fields: () => ({
     id: {
       type: GraphQLID,
     },
@@ -19,7 +19,7 @@ const userType = new GraphQLObjectType({
     lastName: { 
       type: GraphQLString 
     },
-  }
+  })
 });
 
 module.exports = userType;
