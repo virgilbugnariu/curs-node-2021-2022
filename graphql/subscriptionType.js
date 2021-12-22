@@ -1,5 +1,7 @@
 const { GraphQLObjectType, GraphQLInt } = require("graphql");
 const fetch = require('node-fetch');
+const pubsub = require("../pubsub");
+const userType = require("./types/userType");
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -11,15 +13,13 @@ const subscriptionType = new GraphQLObjectType({
   name: 'Subscription',
   fields: {
     countdown: {
-      type: GraphQLInt,
-      subscribe: async function* fiveToOne() {
-        for (const number of [5, 4, 3, 2, 1]) {
-          await sleep(1000);
-          const response = await fetch('http://worldtimeapi.org/api/timezone/Europe/Bucharest');
-          const data = await response.json();
-          yield { countdown: data.unixtime };
-        }
+      type: userType,
+      subscribe: () => {
+        return pubsub.asyncIterator('something_changed');
       },
+      resolve: (source) => {
+        return source.countdown;
+      }
     }
   }
 });

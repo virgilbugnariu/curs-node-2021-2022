@@ -10,7 +10,7 @@ const loginResultType = require('./types/loginResultType');
 const userType = require('./types/userType');
 const db = require('../models');
 const { createUser, updateUser } = require('../repository/users');
-
+const pubsub = require('../pubsub');
 const mutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
@@ -39,7 +39,10 @@ const mutationType = new GraphQLObjectType({
         }
       },
       resolve: async (source, args) => {
-        return createUser(args.createUserInput)
+        const createdUser = await createUser(args.createUserInput);
+        console.log('createdUser', createdUser)
+        pubsub.publish('something_changed', { countdown: { ...createdUser.toJSON() }});
+        return createdUser.toJSON();
       }
     },
     updateUser: {
