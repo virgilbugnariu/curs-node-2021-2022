@@ -35,6 +35,8 @@ module.exports.createUser = async (args) => {
 // Updated User
 module.exports.updateUser = async (args, context) => {
   const { user } = context;
+  const hasPermission = await user.can('UPDATE_USER');
+  console.log(hasPermission);
   
   if(!user) {
     return null;

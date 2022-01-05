@@ -12,6 +12,18 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       models.User.hasMany(models.Post);
       models.User.hasMany(models.Comment);
+      models.User.belongsTo(models.Role, {
+        foreignKey: 'roleId',
+      });
+    }
+
+    async can(permissionName) {
+      const role = await this.getRole();
+      if(role.permissions.indexOf(permissionName) !== -1) {
+        return true;
+      }
+
+      return false;
     }
   };
   User.init({
@@ -19,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
     password: DataTypes.STRING,
+    roleId: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'User',
